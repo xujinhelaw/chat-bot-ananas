@@ -2,8 +2,9 @@
 chat-bot-ananas是Java语言的大模型聊天机器人(LLM Agent) ，本项目为大模型简易版的入门级代码，致力于打造全面的大模型应用实践。基于框架SpringAI+SpringBoot+Vue进行开发。
 
 #1、下载源码  
+```
 git clone https://github.com/xujinhelaw/chat-bot-ananas.git
-
+```  
 #2、使用Idea软件打开项目chat-bot-ananas  
 项目结构如下
 ```
