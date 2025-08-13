@@ -6,11 +6,11 @@ server:
 spring:
   ai:
     openai:
-      api-key: your-api-key-here # 替换为您的阿里云通义千问 API Key
-      base-url: http://127.0.0.1:6006 # 通常默认即可
+      api-key: your-api-key-here # 替换为您的 API Key，如果是本地大模型可以不修改
+      base-url: http://127.0.0.1:6006 # 大模型的访问地址
       chat:
         options:
-          model: deepseek-chat
+          model: qwen-7B
           # temperature参数用于控制生成文本的多样性
           #值越高‌，生成的文本越多样化，但也可能包含更多的随机性和不可预测的内容
           #值越低‌，生成的文本越接近于确定性的结果，即生成的文本会更加一致和可预测

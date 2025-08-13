@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
 import ChatView from "@/views/ChatView.vue";
-//import ChatBot from "@/views/ChatBot.vue";
 
 const routes = [
   {

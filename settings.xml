@@ -2,34 +2,7 @@
 <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
-
-    <!-- ======================================================================= -->
-    <!-- 局部仓库位置 (可选修改) -->
-    <!-- ======================================================================= -->
-    <!--
-    <localRepository>${user.home}/.m2/repository</localRepository>
-    -->
-    <!-- 通常使用默认位置即可。如果需要更改 Maven 本地仓库路径，取消注释并修改此行 -->
-
-    <!-- ======================================================================= -->
-    <!-- 服务器认证配置 (用于访问需要认证的仓库或服务) -->
-    <!-- ======================================================================= -->
-    <!-- 虽然本项目不直接通过 Maven 访问通义千问 API，但此配置展示了如何安全地存储敏感信息 -->
-    <!-- Spring AI 的依赖通常从 Maven Central 或阿里云镜像下载，不需要此认证 -->
-    <!-- 但如果您有私有仓库或未来需要，可以这样配置 -->
     <servers>
-        <!-- 示例：配置访问阿里云私有制品仓库 (如 Alibaba Cloud Artifact Registry) 的认证 -->
-        <!--
-        <server>
-            <id>your-alibaba-cloud-repo-id</id>
-            <username>your-access-key-id</username>
-            <password>your-access-key-secret</password>
-        </server>
-        -->
-
-        <!-- 更安全的方式是使用 settings-security.xml 和密码加密 -->
-        <!-- 但对于简单的 API Key，也可以考虑在 pom.xml 中使用 profiles 和外部属性文件 -->
-        <!-- 本项目中，Qwen API Key 更推荐在 application.yml 中通过环境变量注入 -->
     </servers>
 
     <!-- ======================================================================= -->
