@@ -43,12 +43,19 @@ chat-bot-ananas/ (根项目)
 #3、运行环境配置
 
 ##3.1 安装依赖软件
+
 安装Idea(自带maven)
+
 安装JDK 17
+
 安装nvm 1.2.2
+
 安装nodejs v24.5.0(自带npm 11.5.1)
+
 安装@vue/cli 5.0.8
+
 前台的环境安装可以参考如下的文章
+
 https://www.jianshu.com/writer#/notebooks/40117382/notes/129647150
 
 ##3.2 Idea打开项目，并进行配置
