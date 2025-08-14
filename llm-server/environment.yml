@@ -1,0 +1,20 @@
+name: qwen
+channels:
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/pytorch/
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/r
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/pro
+  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/msys2
+dependencies:
+  - python=3.8.10
+  - pip=24.2
+  - pip:
+    - -i https://pypi.tuna.tsinghua.edu.cn/simple/ # 这里是pip访问国外仓被墙，添加指定国内仓
+    - fastapi==0.104.1
+    - uvicorn==0.24.0.post1
+    - requests==2.32.4
+    - modelscope==1.9.5
+    - transformers==4.35.2
+    - transformers_stream_generator==0.0.4
+    - pip==24.2
