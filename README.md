@@ -90,7 +90,7 @@ conda activate qwen
 source activate qwen
 python chatmachine.py
 ```
-详细的启动可以参考如下的文章  
+详细的环境配置和启动步骤可以参考如下的文章：  
 https://www.jianshu.com/p/e3ab31ae1fbc  
 
 #4、网页大模型聊天机器人chat-bot前后端的启动  
@@ -100,7 +100,7 @@ https://www.jianshu.com/p/e3ab31ae1fbc
 安装nvm 1.2.2  
 安装nodejs v24.5.0(自带npm 11.5.1)  
 安装@vue/cli 5.0.8  
-前台的环境安装可以参考如下的文章  
+前台的环境安装可以参考如下的文章：  
 https://www.jianshu.com/p/f40458d99fa0  
 
 ##4.2 Idea打开项目，并进行配置  
