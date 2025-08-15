@@ -12,7 +12,6 @@ import java.util.Map;
 
 @RestController
 // 允许前端跨域访问，生产环境应配置具体域名
-//对于EventSource请求，还需要添加Access-Control-Allow-Credentials: true
 @CrossOrigin(origins = "*")
 public class ChatController {
     private static final Logger log = LoggerFactory.getLogger(ChatController.class);
@@ -46,15 +45,6 @@ public class ChatController {
                 .doOnNext(chunk -> log.info("Emitting chunk: {}", chunk)) // 👈 加日志
                 .doOnSubscribe(s -> log.info("Subscription started"))
                 .doOnComplete(() -> log.info("Flux completed"));
-        return flux;
-    }
-
-    @GetMapping("/api/chat-stream")
-    public Flux<String> chatStreamGet(@RequestParam("userMessage") String userMessage) {
-        Flux<String> flux = chatClient.prompt()  //提示词
-                .user(userMessage)   //用户输入信息
-                .stream()    //调用大模型
-                .content();
         return flux;
     }
 

@@ -45,30 +45,76 @@ chat-bot-ananas/ (根项目)
 └── pom.xml (根 POM，管理子模块)
 └──settings.xml（maven仓配置文件）
 ```
-#3、运行环境配置  
-##3.1 安装依赖软件  
+
+#3、大模型llm-serve模块的启动  
+##3.1 搭建python的执行环境  
+安装miniconda(仅包含python、conda 和 conda 的依赖项)  
+conda官网  
+https://www.anaconda.com/
+配置下载源（本身是外网则不需要配置）  
+```
+conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/
+conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/
+conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/pytorch/
+```
+##3.2 创建py虚拟环境安装依赖包并切换环境  
+进到chat-bot-ananas/llm-server/目录,导入环境文件chat-bot-ananas/llm-server/environment.yml  
+```
+conda env create -f environment.yml
+# windows 切换环境
+conda activate qwen
+# Linux/Unix 切换环境
+source activate qwen
+```
+##3.3 下载大模型  
+```
+python download.py
+```
+##3.4 启动大模型  
+```
+python api.py
+```
+##3.5 通过本地curl命令访问大模型  
+重新开一个终端，通过curl命令访问  
+```
+curl -H "Content-Type:octet-stream" -X POST -d '{"messages": [{"role": "system","content": "你是一个 helpful assistant。"},
+{"role": "user", "content": "介绍一下你自己"}]}' http://127.0.0.1:6006/v1/chat/completions
+```
+##3.6 通过python实现的客户端访问大模型  
+重新开一个终端，启动客户端
+```
+# 因为是新开的终端，记得切到虚拟环境
+# windows 切换环境
+conda activate qwen
+# Linux/Unix 切换环境
+source activate qwen
+python chatmachine.py
+```
+详细的启动可以参考如下的文章  
+https://www.jianshu.com/p/e3ab31ae1fbc  
+
+#4、网页大模型聊天机器人chat-bot前后端的启动  
+##4.1 安装依赖软件  
 安装Idea(自带maven)  
 安装JDK 17  
 安装nvm 1.2.2  
 安装nodejs v24.5.0(自带npm 11.5.1)  
 安装@vue/cli 5.0.8  
 前台的环境安装可以参考如下的文章  
-https://www.jianshu.com/p/f40458d99fa0
+https://www.jianshu.com/p/f40458d99fa0  
 
-
-##3.2 Idea打开项目，并进行配置  
+##4.2 Idea打开项目，并进行配置  
 ![构建工具配置](https://upload-images.jianshu.io/upload_images/19704237-f9c9f8ba1faee2f9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 ![项目SDK配置](https://upload-images.jianshu.io/upload_images/19704237-620bee8175d03d1a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
-#4、项目启动  
-
-##4.1 编译和启动后端程序  
-配置大模型的信息  
+##4.3 编译和启动后端程序  
+配置大模型的信息，根据实际的api-key和访问地址来配置,
+可以配置公网的大模型，也可以配置本地大模型  
 ![大模型信息配置](https://upload-images.jianshu.io/upload_images/19704237-57064f8b48dae90b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 启动后端代码  
 ![后端代码启动](https://upload-images.jianshu.io/upload_images/19704237-527a407896c52264.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
-##4.2 编译和启动前端程序  
+##4.4 编译和启动前端程序  
 进入前端代码根目录，执行下面的命令  
 ```
 Windows命令
