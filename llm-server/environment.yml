@@ -11,6 +11,10 @@ dependencies:
   - pip=24.2
   - pip:
     - -i https://pypi.tuna.tsinghua.edu.cn/simple/ # 这里是pip访问国外仓被墙，添加指定国内仓
+    - torch==2.4.1
+    - modelscope==1.9.5
+    - tiktoken==0.7.0
+    - accelerate==1.0.1
     - fastapi==0.104.1
     - uvicorn==0.24.0.post1
     - requests==2.32.4

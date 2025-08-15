@@ -9,8 +9,6 @@ git clone https://github.com/xujinhelaw/chat-bot-ananas.git
 项目结构如下
 ```
 chat-bot-ananas/ (根项目)
-├── pom.xml (根 POM，管理子模块)
-├── settings.xml（maven仓配置文件）
 ├── chat-bot-frontend/ (前端模块)
 │   ├── public/
 │   ├── src/
@@ -23,23 +21,29 @@ chat-bot-ananas/ (根项目)
 │   ├── package.json（前台依赖配置和前台应该启动代码）
 │   └── vite.config.js
 └── chat-bot-backend/ (后端模块)
-    ├── src/
-    │   ├── main/
-    │   │   ├── java/
-    │   │   │   └── org/
-    │   │   │       └── ananas/
-    │   │   │           └── chatbotbackend/
-    │   │   │               ├── ChatBotBackendApplication.java(后端应用启动代码)
-    │   │   │               ├── controller/
-    │   │   │               │   └── ChatController.java(后端大模型调用和开放外部接口)
-    │   │   │               └── config/
-    │   │   │                   └── AiConfig.java(类配置文件)
-    │   │   └── resources/
-    │   │       ├── static/ (Vue 构建后的文件将放在这里)
-    │   │       ├── templates/
-    │   │       └── application.yml（后端配置文件）
-    ├── pom.xml（后端依赖管理pom文件）
-    └── target/
+│   ├── src/
+│   │   ├── main/
+│   │   │   ├── java/
+│   │   │   │   └── org/
+│   │   │   │       └── ananas/
+│   │   │   │           └── chatbotbackend/
+│   │   │   │               ├── ChatBotBackendApplication.java(后端应用启动代码)
+│   │   │   │               ├── controller/
+│   │   │   │               │   └── ChatController.java(后端大模型调用和开放外部接口)
+│   │   │   │               └── config/
+│   │   │   │                   └── AiConfig.java(类配置文件)
+│   │   │   └── resources/
+│   │   │       ├── static/ (Vue 构建后的文件将放在这里)
+│   │   │       ├── templates/
+│   │   │       └── application.yml（后端配置文件）
+└── llm-server/ (大模型服务端模块)
+│   ├── api.py（大模型启动和开发接口代码）
+│   ├── chatmachine.py（大模型访问客户端代码）
+│   ├── download.py（大模型下载代码）
+│   ├── environment.yml（大模型部署和访问客户端需要的依赖包）
+└── pom.xml（后端依赖管理pom文件）
+└── pom.xml (根 POM，管理子模块)
+└──settings.xml（maven仓配置文件）
 ```
 #3、运行环境配置  
 ##3.1 安装依赖软件  
