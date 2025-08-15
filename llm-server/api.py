@@ -44,7 +44,7 @@ app.add_middleware(
 # --- 1. 定义流式生成函数 ---
 def generate_stream(messages: str, max_new_tokens: int = 512, temperature=0.7):
     global model, tokenizer  # 声明全局变量以便在函数内部使用模型和分词器
-    print(f"生成流式响应的异步生成器,messages is {messages}")
+    print(f"生成流式响应的异步生成器,messages is {repr(messages)}")
 
     input_ids = tokenizer.apply_chat_template(
         messages,  # 要格式化的消息
@@ -62,14 +62,19 @@ def generate_stream(messages: str, max_new_tokens: int = 512, temperature=0.7):
 
     # 对输出进行流式响应
     async def stream_response():
+        is_end_of = False
         for text in streamer:
             if text:
                 # 处理消息分割符，<|im_start|>表示一条消息的开始，
                 #<|im_end|> 表示一条消息的结束，<|endoftext|>表示文本生成结束
+                if text.find("<|im_start|>")!= -1:
+                    text = text.replace("<|im_start|>", "").strip()
                 if text.find("<|im_end|>")!= -1:
-                    text = text.split("<|im_end|>")[0]
+                    text = text.replace("<|im_end|>", "").strip()
                 if text.find("<|endoftext|>")!=-1:
-                    text = text.split("<|endoftext|>")[0]
+                    text = text.replace("<|endoftext|>", "").strip()
+                    is_end_of = True
+
                 chunk = {
                     "id": f"chatcmpl-{datetime.datetime.now().timestamp()}",
                     "object": "chat.completion.chunk",
@@ -88,6 +93,9 @@ def generate_stream(messages: str, max_new_tokens: int = 512, temperature=0.7):
                 await asyncio.sleep(0.1) #模拟延迟
                 print(f"data is: {json.dumps(chunk)}")
                 print(f"content is:{repr(text)}")
+
+                if is_end_of :#处理完结束符<|endoftext|>需要跳出循环
+                    break
 
         # 发送结束 chunk
         final_chunk = {
@@ -124,7 +132,6 @@ async def stream_chat(request: Request):
     json_post = json.dumps(json_post_raw)  # 将JSON数据转换为字符串
     json_post_list = json.loads(json_post)  # 将字符串转换为Python对象
     messages = json_post_list.get('messages')  # 获取请求中的提示
-    print(f"生成流式响应的异步生成器,messages is {messages}")
     return generate_stream(messages,10240)
 
 # 主函数入口
