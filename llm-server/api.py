@@ -62,7 +62,7 @@ def generate_stream(messages: str, max_new_tokens: int = 512, temperature=0.7):
     streamer = TextIteratorStreamer(tokenizer, skip_prompt=True, timeout=10.0)
 
     # 执行大模型计算输出
-    model.generate(model_inputs.input_ids, max_new_tokens=512, temperature=0.7, streamer=streamer)
+    model.generate(input_ids=model_inputs.input_ids, max_new_tokens=512, temperature=0.7, streamer=streamer)
 
     # 对输出进行流式响应
     async def stream_response():
@@ -156,7 +156,7 @@ if __name__ == '__main__':
         model = PeftModel.from_pretrained(model, lora_path)
         end_time = datetime.datetime.now()
         cos_time = (end_time - start_time).seconds
-        print("LoRA权重加载完成。耗时：{cos_time}")
+        print(f"LoRA权重加载完成。耗时：{cos_time}")
     print("模型加载完成。")
     # 启动FastAPI应用
     uvicorn.run(app, host='0.0.0.0', port=6006)  # 在指定端口和主机上启动应用
