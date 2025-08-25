@@ -156,7 +156,7 @@ if __name__ == '__main__':
         model = PeftModel.from_pretrained(model, lora_path)
         end_time = datetime.datetime.now()
         cos_time = (end_time - start_time).seconds
-        print(f"LoRA权重加载完成。耗时：{cos_time}")
+        print(f"LoRA权重加载完成。耗时：{cos_time} 秒。")
     print("模型加载完成。")
     # 启动FastAPI应用
     uvicorn.run(app, host='0.0.0.0', port=6006)  # 在指定端口和主机上启动应用

@@ -1,1 +1,6 @@
-pip install torch transformers peft datasets accelerate bitsandbytes --upgrade
+pip install transformers peft datasets accelerate bitsandbytes tiktoken transformers_stream_generator
+
+\# 基础依赖
+pip install transformers\==4.35.2 peft\==0.4.0 datasets\==2.10.1 scipy
+\# 量化支持（4bits 微调需安装）
+pip install bitsandbytes\==0.41.1 accelerate\==0.20.3
