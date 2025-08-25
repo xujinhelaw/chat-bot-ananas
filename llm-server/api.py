@@ -16,6 +16,10 @@ import datetime
 import torch
 #解决跨域问题
 from fastapi.middleware.cors import CORSMiddleware
+#判断lora的路径下是否有数据
+import os
+#用于给模型叠加lora参数
+from peft import PeftModel
 
 # 设置设备参数
 DEVICE = "cuda"  # 使用CUDA
@@ -143,6 +147,16 @@ if __name__ == '__main__':
     model = AutoModelForCausalLM.from_pretrained("./qwen/Qwen-7B-Chat",torch_dtype=torch.float16, device_map="auto", trust_remote_code=True).eval()
     model.generation_config = GenerationConfig.from_pretrained("./qwen/Qwen-7B-Chat", trust_remote_code=True) # 可指定
     model.eval()  # 设置模型为评估模式
+    # 加载LoRA 权重
+    lora_path="./llmserve/llm-finetune/lora-alpaca-qwen2-finetuned"
+    if os.path.exists(lora_path):
+        print("正在加载LoRA权重... ...")
+        start_time = datetime.datetime.now()
+        print(f"LoRA权重路径为：{lora_path}")
+        model = PeftModel.from_pretrained(model, lora_path)
+        end_time = datetime.datetime.now()
+        cos_time = (end_time - start_time).seconds
+        print("LoRA权重加载完成。耗时：{cos_time}")
     print("模型加载完成。")
     # 启动FastAPI应用
     uvicorn.run(app, host='0.0.0.0', port=6006)  # 在指定端口和主机上启动应用
