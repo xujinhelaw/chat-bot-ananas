@@ -148,7 +148,7 @@ if __name__ == '__main__':
     model.generation_config = GenerationConfig.from_pretrained("./qwen/Qwen-7B-Chat", trust_remote_code=True) # 可指定
     model.eval()  # 设置模型为评估模式
     # 加载LoRA 权重
-    lora_path="./llmserve/llm-finetune/lora-alpaca-qwen2-finetuned"
+    lora_path="./llm-finetune/lora-alpaca-qwen2-finetuned"
     if os.path.exists(lora_path):
         print("正在加载LoRA权重... ...")
         start_time = datetime.datetime.now()

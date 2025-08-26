@@ -14,6 +14,8 @@ from datasets import load_dataset, Dataset
 import json
 import torch
 import warnings
+import datetime
+
 #transformers >= 4.37.0 废弃了旧的梯度检查点设置方式_set_gradient_checkpointing() 方法（Qwen 就是这么做的）
 warnings.filterwarnings("ignore", message="You are using an old version of the checkpointing format")
 # -------------------------------
@@ -81,27 +83,7 @@ base_names = list(set([name.split('.')[-1] for name in target_candidates]))
 print(f"\n🎯 Candidate target_modules: {base_names}")
 
 # -------------------------------
-# 2. 配置 LoRA
-# -------------------------------
-lora_config = LoraConfig(
-    r=8,                        # LoRA 秩
-    lora_alpha=16,               # 超参
-    # c_attn 是 Qwen 中 QKV 投影的统一层，还有["c_attn", "c_proj", "w1", "w2"]
-    target_modules=["c_attn", "c_proj", "w1", "w2"],
-    #在低秩更新模块中引入 10% 的随机丢弃概率，
-    #避免模型过度依赖 LoRA 新增参数拟合训练数据中的噪声，提高对未见过数据的适配能力
-    lora_dropout=0.1,
-    #指定不对模型的偏置参数（bias）进行微调或修改
-    bias="none",
-    task_type="CAUSAL_LM"        # 因果语言建模
-)
-
-#将原始预训练模型与 LoRA（或 QLoRA）配置结合，生成一个支持参数高效微调的 PEFT 模型
-model = get_peft_model(model, lora_config)
-model.print_trainable_parameters()  # 查看可训练参数量（通常 <1%）
-
-# -------------------------------
-# 3. 加载与预处理数据集
+# 2. 加载与预处理数据集
 # -------------------------------
 # 使用 Alpaca 风格的指令数据集（示例用 'tatsu-lab/alpaca'），格式如下
 #{
@@ -114,23 +96,55 @@ model.print_trainable_parameters()  # 查看可训练参数量（通常 <1%）
 # 读取本地的 JSON 数据
 data_path = "alpaca_data.json"  # 替换为你自己的数据路径
 with open(data_path, "r", encoding="utf-8") as f:
-    raw_data = json.load(f)
+    train_datas  = json.load(f)
 
-def generate_prompt(example):
-    """构造指令输入格式"""
-    if example["input"]:
-        return f"### Instruction:\n{example['instruction']}\n\n### Input:\n{example['input']}\n\n### Response:\n{example['output']}"
-    else:
-        return f"### Instruction:\n{example['instruction']}\n\n### Response:\n{example['output']}"
+# 将alpaca格式的数据转为qwen的chattemplate格式
+def convert_format(data_list):
+    converted_datas = []
+    for item in data_list:
+        # 构建 user 的 content
+        user_content = item["instruction"]
+        if item["input"].strip():  # 检查 input 是否非空（去除空格后）
+            user_content = f"{item['instruction']}\n\n{item['input']}"
+            # 或者根据语义调整顺序，比如 input 是主要文本时：f"{item['input']}\n\n{item['instruction']}"
 
-# 添加 prompt 字段
-for item in raw_data:
-    item["text"] = generate_prompt(item)
+        messages = [
+            {"role": "system", "content": "你是一个智能助手"},
+            {"role": "user", "content": user_content},
+            {"role": "assistant", "content": item["output"]}
+        ]
+        converted_datas.append({"messages": messages})
+    return converted_datas
 
-# 转为 Hugging Face Dataset
-# 如果使用hugging face的数据
-# dataset = load_dataset("HmyHxy/finance-Knowledge-Credit-Chinese", split="train[:1000]")  # 小样本测试
-dataset = Dataset.from_list(raw_data)
+# 调用转换函数
+converted_datas = convert_format(train_datas)
+
+def create_and_prepare_dataset(data_list):
+    """
+    将原始数据列表转换为 Hugging Face Dataset 格式，并应用聊天模板。
+    """
+    def apply_chat_template(example):
+        messages = example["messages"]
+        # 使用分词器的 apply_chat_template 方法将消息列表转换为模型输入格式
+        try:
+            prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=False)
+        except Exception as e:
+            print(f"Error applying chat template: {e}")
+            prompt = "" # 或者可以跳过这个样本
+        print(f"打印 LoRA 训练数据。 text: {prompt}")
+        return { "text": prompt }
+
+    # 创建 Dataset 对象
+    raw_dataset = Dataset.from_list(data_list)
+
+    # 应用模板函数到整个数据集
+    processed_dataset = raw_dataset.map(apply_chat_template)
+
+    return processed_dataset
+
+# 应用聊天模板
+dataset = create_and_prepare_dataset(converted_datas)
+print(f"🚀  打印 LoRA 训练数据。dataset:{dataset}")
 
 # Tokenize 函数
 def tokenize_function(examples):
@@ -146,24 +160,50 @@ def tokenize_function(examples):
 tokenized_dataset = dataset.map(
     tokenize_function,
     batched=True,
-    remove_columns=[col for col in ["instruction", "input", "output", "text"] if col in dataset.column_names],
+    remove_columns=[col for col in ["messages","text"] if col in dataset.column_names],
     num_proc=4
 )
+print(f"🚀  打印 处理后的数据集 tokenized_dataset :{tokenized_dataset}")
 
 # 数据整理器（自动处理 padding）
 data_collator = DataCollatorForLanguageModeling(tokenizer, mlm=False)
+
+# -------------------------------
+# 3. 配置 LoRA
+# -------------------------------
+lora_config = LoraConfig(
+    r=8,                        # LoRA 秩
+    lora_alpha=16,               # 超参
+    # c_attn 是 Qwen 中 QKV 投影的统一层，还有["c_attn", "c_proj", "w1", "w2"]
+    target_modules=["c_attn", "c_proj", "w1", "w2"],
+    #在低秩更新模块中引入 10% 的随机丢弃概率，
+    #避免模型过度依赖 LoRA 新增参数拟合训练数据中的噪声，提高对未见过数据的适配能力
+    lora_dropout=0.1,
+    #指定不对模型的偏置参数（bias）进行微调或修改
+    bias="none",
+    task_type="CAUSAL_LM"        # 因果语言建模
+)
+
+#将原始预训练模型与 LoRA（或 QLoRA）配置结合，生成一个支持参数高效微调的 PEFT 模型
+print(f"\n🎯  将原始预训练模型与 LoRA（或 QLoRA）配置结合！这个过程比较耗时，请耐心等待！")
+start_time = datetime.datetime.now()
+model = get_peft_model(model, lora_config)
+end_time = datetime.datetime.now()
+cos_time = (end_time - start_time).seconds
+print(f"原始预训练模型与 LoRA（或 QLoRA）配置结合完成。耗时：{cos_time} 秒。")
+model.print_trainable_parameters()  # 查看可训练参数量（通常 <1%）
 
 # -------------------------------
 # 4. 配置训练参数
 # -------------------------------
 training_args = TrainingArguments(
     output_dir="./lora-alpaca-qwen2",  # 模型训练结果（ checkpoint、日志等 ）的保存路径
-    num_train_epochs=10,  # 训练的总轮数，即完整遍历训练集的次数
+    num_train_epochs=200,  # 训练的总轮数，即完整遍历训练集的次数
     per_device_train_batch_size=4,  # 每个设备（如单张GPU）上的训练批次大小
-    gradient_accumulation_steps=8,  # 梯度累积步数，每累积8个批次后再更新一次参数（变相增大总batch size）
+    gradient_accumulation_steps=4,  # 梯度累积步数，每累积4个批次后再更新一次参数（变相增大总batch size）
     learning_rate=2e-4,  # 学习率，LoRA微调常用2e-4 ~ 5e-4
     logging_steps=10,  # 每训练10步记录一次日志（如损失值）
-    save_steps=500,  # 每训练500步保存一次模型 checkpoint
+    save_steps=100,  # 每训练500步保存一次模型 checkpoint
     save_total_limit=2,  # 最多保留2个最新的模型 checkpoint，避免占用过多存储空间
     fp16=False,  # 不使用FP16混合精度训练
     bf16=torch.cuda.is_bf16_supported(),  # 若GPU支持BF16精度则启用（比FP16更稳定，显存占用相似）
@@ -180,7 +220,7 @@ training_args = TrainingArguments(
 trainer = Trainer(
     model=model,
     args=training_args,
-    train_dataset=tokenized_dataset,
+    train_dataset=tokenized_dataset,# <<< 这里传入了数据集！
     data_collator=data_collator,
     tokenizer=tokenizer,
 )
