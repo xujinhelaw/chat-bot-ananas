@@ -3,7 +3,7 @@
 git clone https://github.com/xujinhelaw/chat-bot-ananas.git
 ```  
 #2、使用Idea软件打开项目chat-bot-ananas  
-项目结构如下
+项目结构如下  
 ```
 chat-bot-ananas/ (根项目)
 └── llm-server/ (大模型服务端模块)
@@ -20,20 +20,21 @@ chat-bot-ananas/ (根项目)
 └── pom.xml (根 POM，管理子模块)
 └──settings.xml（maven仓配置文件）
 ```  
-#2、大模型llm-serve模块中lora微调的启动  
-##2.1 安装依赖
-可以新创建一个虚拟机环境，也可以直接在当前的大模型运行环境中，追加安装下列的依赖
+#3、大模型llm-serve模块中lora微调的启动  
+##3.1 安装依赖  
+可以新创建一个虚拟机环境，也可以直接在当前的大模型运行环境中，追加安装下列的依赖  
 ```
 # 基础依赖
 pip install transformers==4.34.0 peft==0.4.0 datasets==2.10.1 scipy==1.10.1 tiktoken==0.7.0 transformers_stream_generator==0.0.4
 # 量化支持（4bits 微调需安装）
 pip install bitsandbytes==0.41.1 accelerate==0.20.3
 ```  
-##2.2 执行lora微调的脚本  
+##3.2 执行lora微调的脚本  
 ```
+# 进入llm-finetune的目录
 python lora_finetune.py
 ```  
-#3、启动大模型并叠加lora微调的参数  
+#4、启动大模型并叠加lora微调的参数  
 ```
 # 返回llm-server的目录，并执行，这里的api.py做了判断处理，如果有微调参数，则直接叠加
 python api.py
