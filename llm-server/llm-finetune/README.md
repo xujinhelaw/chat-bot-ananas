@@ -10,7 +10,7 @@ chat-bot-ananas/ (根项目)
 │   └── llm-server/ (大模型服务端模块)
 │      ├── alpaca_data.json（大模型微调训练的数据集）
 │      ├── environment.yml（大模型微调需要的依赖包）
-│      ├── load_lora_model.py （大模型微调的代码逻辑）
+│      ├── load_lora_model.py （启动大模型并叠加微调参数的代码逻辑，调测中）
 │      └── lora_finetune.py （大模型微调的代码逻辑）
 │   ├── api.py（大模型启动和开发接口代码）
 │   ├── chatmachine.py（大模型访问客户端代码）
