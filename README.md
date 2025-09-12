@@ -1,6 +1,15 @@
 #项目简介
 chat-bot-ananas是Java语言的大模型聊天机器人(LLM Agent) ，本项目为大模型简易版的入门级代码，致力于打造全面的大模型应用实践。基于框架SpringAI+SpringBoot+Vue进行开发。
 
+##<a name="table"/>已具备的功能  
+功能名称       | 是否实现  
+------------- | -------------  
+本地部署大模型   | 实现  
+本地大模型微调   | 实现  
+大模型聊天机器人 | 实现  
+RAG           | 实现  
+MCP           | 待实现  
+
 #1、下载源码  
 ```
 git clone https://github.com/xujinhelaw/chat-bot-ananas.git
@@ -15,6 +24,7 @@ chat-bot-ananas/ (根项目)
 │   │   ├── assets/
 │   │   ├── components/
 │   │   │  ├── ChatView.vue(前台聊天界面代码)
+│   │   │  ├── RagManage.vue(RAG文档管理界面代码)
 │   │   ├── views/
 │   │   ├── App.vue
 │   │   └── main.js
@@ -27,19 +37,44 @@ chat-bot-ananas/ (根项目)
 │   │   │   │   └── org/
 │   │   │   │       └── ananas/
 │   │   │   │           └── chatbotbackend/
-│   │   │   │               ├── ChatBotBackendApplication.java(后端应用启动代码)
-│   │   │   │               ├── controller/
-│   │   │   │               │   └── ChatController.java(后端大模型调用和开放外部接口)
-│   │   │   │               └── config/
-│   │   │   │                   └── AiConfig.java(类配置文件)
+│   │   │   │           │    ├── controller/
+│   │   │   │           │        └── ChatController.java(后端大模型调用和开放外部接口)
+│   │   │   │           │    └── config/
+│   │   │   │           │        └── AiConfig.java(类配置文件)
+│   │   │   │           └── rag/(Rag后端代码实现)
+│   │   │   │           │    ├── controller/
+│   │   │   │           │        ├── ConfigController.java(智能聊天助手的配置接口代码)
+│   │   │   │           │        ├── FileUploadController.java(Rag文件上传接口代码)
+│   │   │   │           │        ├── SearchController.java(Rag检索接口代码)
+│   │   │   │           │        └── ...
+│   │   │   │           │    ├── model/
+│   │   │   │           │        ├── Chunk.java(Rag资料分块对象代码)
+│   │   │   │           │        ├── ChunkMatchResult.java(Rag检索结果对象代码)
+│   │   │   │           │        ├── Document.java(Rag文档对象代码)
+│   │   │   │           │    ├── repository/
+│   │   │   │           │        └──  DocumentRepository.java(Rag的Dao实现存储内容和检索内容代码)
+│   │   │   │           │    └── service/
+│   │   │   │           │        ├── PdfProcessingService.java(Rag文档处理服务代码)
+│   │   │   │           │        └── SearchService.java(Rag相似度检索服务代码)
+│   │   │   │           └──  ChatBotBackendApplication.java(后端应用启动代码)
+│   │   │   │
 │   │   │   └── resources/
 │   │   │       ├── static/ (Vue 构建后的文件将放在这里)
 │   │   │       ├── templates/
 │   │   │       └── application.yml（后端配置文件）
+└── install/ (大模型服务端模块)
+│   ├── ragdata/ (rag文档目录)
+│   │   └── 证券公司监督管理条例.pdf（rag文档）
 └── llm-server/ (大模型服务端模块)
-│   ├── api.py（大模型启动和开发接口代码）
+│   └── llm-finetune/ (大模型lora微调模块)
+│      ├── alpaca_data.json（大模型微调训练的数据集）
+│      ├── environment.yml（大模型微调需要的依赖包）
+│      ├── load_lora_model.py （启动大模型并叠加微调参数的代码逻辑，调测中）
+│      ├── lora_finetune.py （大模型微调的代码逻辑）
+│      └── README.md （大模型微调模块的README）
+│   ├── api.py（大模型、Embedding模型启动和开放接口代码）
 │   ├── chatmachine.py（大模型访问客户端代码）
-│   ├── download.py（大模型下载代码）
+│   ├── download.py（大模型、Embedding模型下载代码）
 │   ├── environment.yml（大模型部署和访问客户端需要的依赖包）
 └── pom.xml（后端依赖管理pom文件）
 └── pom.xml (根 POM，管理子模块)
@@ -133,7 +168,42 @@ npm run serve
 跟大模型进行对话  
 ![image.png](https://upload-images.jianshu.io/upload_images/19704237-0676bcbf2b9261d8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
+#5 大模型lora微调  
+#5.1 大模型llm-serve模块中lora微调的启动  
+##5.1.1 安装依赖  
+追加安装下列的依赖  
+```
+# 基础依赖
+pip install transformers==4.34.0 peft==0.4.0 datasets==2.10.1 scipy==1.10.1 tiktoken==0.7.0 transformers_stream_generator==0.0.4
+# 量化支持（4bits 微调需安装）
+pip install bitsandbytes==0.41.1 accelerate==1.0.1
+```  
+##5.1.2 执行lora微调的脚本  
+```
+# 进入llm-finetune的目录
+python lora_finetune.py
+```  
+#5.2 启动大模型并叠加lora微调的参数
+```
+# 返回llm-server的目录，并执行，这里的api.py做了判断处理，如果有微调参数，则直接叠加
+python api.py
+```
+#5.3 通过python实现的客户端访问大模型
+重新开一个终端，启动客户端
+```
+# 因为是新开的终端，记得切到虚拟环境
+# windows 切换环境
+conda activate qwen
+# Linux/Unix 切换环境
+source activate qwen
+python chatmachine.py
+```
 
+#6、大模型RAG构建知识图谱  
+启动前后端代码后，勾选RAG模型的复选框
+
+让大模型回答：  
+证券公司从事证券自营业务不得有哪些行为  
 
 
 

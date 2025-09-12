@@ -2,7 +2,21 @@
 <!-- 格式化vue的命令：npm run lint --fix -->
 <template>
   <div class="chat-container">
-    <h1>AI 聊天机器人</h1>
+    <!-- 顶部导航栏 -->
+    <div class="top-nav">
+      <h1>AI 聊天机器人</h1>
+      <div class="controls">
+        <label class="switch">
+          <input type="checkbox" v-model="ragEnabled" @change="toggleRag" />
+          <span class="slider"></span>
+        </label>
+        <span style="margin-left: 8px; font-size: 14px">RAG模式</span>
+        <router-link to="/rag-manage">
+          <button class="manage-btn">文档管理</button>
+        </router-link>
+      </div>
+    </div>
+    <!-- 聊天内容区域 -->
     <div class="chat-box" ref="chatBox">
       <div
         v-for="(msg, index) in messages"
@@ -10,7 +24,8 @@
         :class="['message', msg.sender]"
       >
         <strong>{{ msg.sender === "user" ? "你:" : "AI:" }}</strong>
-        <p>{{ msg.text }}</p>
+        <!--style="white-space: pre-wrap" 作用是保留空格和换行-->
+        <p style="white-space: pre-wrap">{{ msg.text }}</p>
       </div>
       <!-- 流式响应的 AI 消息 -->
       <div
@@ -49,9 +64,34 @@ export default {
       userInput: "",
       isStreaming: false,
       streamText: "",
+      ragEnabled: false, // 默认关闭
     };
   },
   methods: {
+    async toggleRag() {
+      try {
+        await fetch("http://localhost:8080/config/rag", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ ragEnabled: this.ragEnabled }),
+        });
+        // 可选：提示用户
+        this.messages.push({
+          sender: "system",
+          text: `RAG 模式已${this.ragEnabled ? "开启" : "关闭"}`,
+        });
+      } catch (err) {
+        console.error("切换 RAG 失败", err);
+        // 恢复原状态
+        this.ragEnabled = !this.ragEnabled;
+        this.messages.push({
+          sender: "ai",
+          text: "无法更新 RAG 设置，请检查服务状态。",
+        });
+      }
+    },
     async sendMessage() {
       const message = this.userInput.trim();
       if (!message || this.isStreaming) return;
@@ -88,20 +128,20 @@ export default {
           if (done === true) break;
           console.info("circle reader value");
           const chunk = decoder.decode(value, { stream: true });
-          const lines = chunk.split("\n"); // ✅ 解析 SSE 行
+          console.info(`chunk is: ##`);
+          console.info(JSON.stringify(chunk));
+          console.info(`chunk is: ##`);
+          const lines = chunk.split("\n\n"); // ✅ 解析 SSE 行
 
           for (const line of lines) {
-            const trimmedLine = line.trim();
-            if (trimmedLine.startsWith("data:")) {
-              const dataContent = trimmedLine.slice(5).trim(); // ✅ 提取 data 内容
-              if (dataContent !== "[DONE]") {
-                this.streamText += dataContent; // ✅ 追加纯净文本
-                console.info("circle dataContent:", dataContent);
-                await this.$nextTick(); // ✅ Vue 2 正确用法
-                // ✅ 3. 使用 setTimeout(0) 让出执行权，强制浏览器渲染
-                await new Promise((resolve) => setTimeout(resolve, 0));
-                this.scrollToBottom();
-              }
+            const dataContent = line.replace(/data:/g, "");
+            if (dataContent !== "[DONE]") {
+              this.streamText += dataContent; // ✅ 追加纯净文本
+              console.info(`circle dataContent:#${dataContent}#`);
+              await this.$nextTick(); // ✅ Vue 2 正确用法
+              // ✅ 3. 使用 setTimeout(0) 让出执行权，强制浏览器渲染
+              await new Promise((resolve) => setTimeout(resolve, 0));
+              this.scrollToBottom();
             }
           }
           // 忽略非 data 行
@@ -130,12 +170,22 @@ export default {
       }
     },
   },
-  mounted() {
+  async mounted() {
     // 初始化消息
     this.messages.push({
       sender: "ai",
       text: "你好！我是你的智能助手，有什么我可以帮你的吗？",
     });
+
+    // 获取当前 RAG 状态
+    try {
+      const res = await fetch("http://localhost:8080/config/rag");
+      const isEnabled = await res.json();
+      this.ragEnabled = isEnabled;
+    } catch (err) {
+      console.warn("无法获取 RAG 状态，使用默认值");
+    }
+
     // 页面加载后自动滚动到底部
     this.scrollToBottom();
   },
@@ -143,6 +193,33 @@ export default {
 </script>
 
 <style scoped>
+.top-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.top-nav h1 {
+  margin: 0;
+  font-size: 1.8em;
+  color: #333;
+}
+
+.manage-btn {
+  padding: 8px 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.manage-btn:hover {
+  background-color: #0056b3;
+}
 .chat-container {
   max-width: 800px;
   margin: 0 auto;

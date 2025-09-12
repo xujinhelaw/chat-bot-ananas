@@ -4,6 +4,7 @@ server:
 
 # Spring AI 配置
 spring:
+  # AI 配置
   ai:
     openai:
       api-key: your-api-key-here # 替换为您的 API Key，如果是本地大模型可以不修改
@@ -15,7 +16,24 @@ spring:
           #值越高‌，生成的文本越多样化，但也可能包含更多的随机性和不可预测的内容
           #值越低‌，生成的文本越接近于确定性的结果，即生成的文本会更加一致和可预测
           temperature: 0.7
+      # 嵌入模型配置
+      embedding:
+        options:
+          model: bge-large-zh-v1.5 # 模型名在这里
+          dimensions: 1024 # 向量维度
 
+# Neo4j 配置
+  neo4j:
+    uri: neo4j://localhost:7687 #另外http:////localhost:7474 管理页面
+    authentication:
+      username: neo4j
+      password: 3er4#ER$ # 修改为你的密码
+
+# 文件上传配置
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
 # 可选：配置日志
 logging:
   level:

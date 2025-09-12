@@ -7,11 +7,12 @@ git clone https://github.com/xujinhelaw/chat-bot-ananas.git
 ```
 chat-bot-ananas/ (根项目)
 └── llm-server/ (大模型服务端模块)
-│   └── llm-server/ (大模型服务端模块)
+│   └── llm-finetune/ (大模型微调模块)
 │      ├── alpaca_data.json（大模型微调训练的数据集）
 │      ├── environment.yml（大模型微调需要的依赖包）
 │      ├── load_lora_model.py （启动大模型并叠加微调参数的代码逻辑，调测中）
-│      └── lora_finetune.py （大模型微调的代码逻辑）
+│      ├── lora_finetune.py （大模型微调的代码逻辑）
+│      └── README.md （大模型微调模块的README）
 │   ├── api.py（大模型启动和开发接口代码）
 │   ├── chatmachine.py（大模型访问客户端代码）
 │   ├── download.py（大模型下载代码）
@@ -27,7 +28,7 @@ chat-bot-ananas/ (根项目)
 # 基础依赖
 pip install transformers==4.34.0 peft==0.4.0 datasets==2.10.1 scipy==1.10.1 tiktoken==0.7.0 transformers_stream_generator==0.0.4
 # 量化支持（4bits 微调需安装）
-pip install bitsandbytes==0.41.1 accelerate==0.20.3
+pip install bitsandbytes==0.41.1 accelerate==1.0.1
 ```  
 ##3.2 执行lora微调的脚本  
 ```

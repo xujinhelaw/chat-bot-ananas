@@ -1,0 +1,21 @@
+# 本文件为待实现compose安装功能的问题
+version: '3.9'
+services:
+  neo4j:
+    image: neo4j:5.14.0 # 推荐使用较新的 5.x 版本
+    container_name: neo4j-rag
+    ports:
+      - "7474:7474" # HTTP for Browser
+      - "7687:7687" # Bolt for driver
+    environment:
+      - NEO4J_AUTH=neo4j/mypassword # 设置密码
+      - NEO4J_ACCEPT_LICENSE_AGREEMENT=yes # 必须同意许可
+      # 启用 APOC 库 (强烈推荐，对向量操作很有用)
+      - NEO4JLABS_PLUGINS=["apoc"]
+    volumes:
+      - ./data:/data # 持久化数据
+      - ./logs:/logs # 持久化日志
+      - ./plugins:/plugins # 挂载插件目录 (如果需要自定义插件)
+    # 如果需要自定义配置，可以挂载 conf 目录
+    # - ./conf:/var/lib/neo4j/conf
+    restart: unless-stopped
