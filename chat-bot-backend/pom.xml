@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.ananas</groupId>
         <artifactId>chat-bot-parent</artifactId>
-        <version>0.0.1</version>
+        <version>0.0.2</version>
     </parent>
 
     <artifactId>chat-bot-backend</artifactId>
@@ -61,8 +61,8 @@
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>pdfbox</artifactId>
             <version>2.0.30</version>
-            <!-- PDF 解析: Apache PDFBox End -->
         </dependency>
+        <!-- PDF 解析: Apache PDFBox End -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
