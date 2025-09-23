@@ -27,8 +27,8 @@ from typing import List, Dict, Any
 from sentence_transformers import SentenceTransformer
 
 ## 大模型啟動配置
-USE_LORA = True      # 控制是否加载 LoRA
-USE_Embedding = True      # 控制是否启用 Embedding模型
+USE_LORA = False      # 控制是否加载 LoRA
+USE_Embedding = False      # 控制是否启用 Embedding模型
 
 # 设置设备参数
 # 自动检测设备：优先使用CUDA，否则使用CPU
@@ -65,27 +65,40 @@ app.add_middleware(
 )
 
 # --- 1. 定义流式生成函数 ---
-def generate_stream(messages: str, max_new_tokens: int = 512, temperature=0.7):
+def generate_stream(json_post_list: str, max_new_tokens: int = 512):
     global model, tokenizer  # 声明全局变量以便在函数内部使用模型和分词器
-    print(f"生成流式响应的异步生成器,messages is {repr(messages)}")
+    messages = json_post_list.get('messages')
+    tools = json_post_list.get("tools")
+    print(f"生成流式响应的异步生成器,tools is {repr(tools)}")
+    stream = json_post_list.get("stream")
+    temperature = json_post_list.get("temperature")
 
     input_ids = tokenizer.apply_chat_template(
         messages,  # 要格式化的消息
+        tools=tools,
+        tool_choice="auto",  # 强制调用mcp工具
         tokenize=False, # 不进行分词
-        add_generation_prompt=True # 添加生成提示
+        add_generation_prompt=True, # 添加生成提示
+        enable_thinking=True # 是否开启思考模式，默认开启
     )
     # 对输入进行编码
     model_inputs = tokenizer([input_ids], return_tensors="pt").to(model.device)
 
-    # 创建TextIteratorStreamer，用于流式获取生成的token
-    streamer = TextIteratorStreamer(tokenizer, skip_prompt=True, timeout=10.0)
+    if stream:
+        # 创建TextIteratorStreamer，用于流式获取生成的token
+        streamer = TextIteratorStreamer(tokenizer, skip_prompt=True, timeout=10.0)
+    else:
+        streamer = None  # 不启用流式
 
     # 执行大模型计算输出
-    model.generate(input_ids=model_inputs.input_ids, max_new_tokens=512, temperature=0.7, streamer=streamer)
+    model.generate(input_ids=model_inputs.input_ids, max_new_tokens=max_new_tokens, temperature=temperature, streamer=streamer)
 
     # 对输出进行流式响应
     async def stream_response():
         is_end_of = False
+        is_start_tool = False
+        is_end_tool = False
+        tool_call_content = ""
         for text in streamer:
             if text:
                 # 处理消息分割符，<|im_start|>表示一条消息的开始，
@@ -101,6 +114,13 @@ def generate_stream(messages: str, max_new_tokens: int = 512, temperature=0.7):
                 if text.find("<|endoftext|>")!=-1:
                     text = text.replace("<|endoftext|>", "").strip()
                     is_end_of = True
+                if text.find("<tool_call>")!=-1:
+                    text = text.replace("<tool_call>", "").strip()
+                    is_start_tool = True
+                    print(f"is_start_tool is:{is_start_tool}")
+                if text.find("</tool_call>")!=-1:
+                    is_end_tool = True
+                    print(f"is_end_tool is:{is_end_tool}")
 
                 chunk = {
                     "id": f"chatcmpl-{datetime.datetime.now().timestamp()}",
@@ -110,11 +130,38 @@ def generate_stream(messages: str, max_new_tokens: int = 512, temperature=0.7):
                     "choices": [
                         {
                             "index": 0,
-                            "delta": {"content": text},
+                            "delta": {},
                             "finish_reason": None
                         }
                     ]
                 }
+
+                if is_end_tool:
+                    tool_data = json.loads(tool_call_content.strip())
+                    name = tool_data.get("name")
+                    arguments = tool_data.get("arguments", {})
+                    arguments = json.dumps(arguments, ensure_ascii=False)
+                    tool_call_id = None
+                    tool_call = {
+                        "type": "function",
+                        "function": {
+                            "name": name,
+                            "arguments": arguments
+                        },
+                        "id": tool_call_id or f"call_{hash(tool_call_content) % 1000000:06d}"
+                    }
+
+                    chunk["choices"][0]["delta"]["tool_calls"] = tool_call
+                    is_start_tool = False
+                    is_end_tool = False
+                    tool_call_content = ""
+                if is_start_tool:
+                    tool_call_content = tool_call_content + text
+                    print(f"tool_call_content is:{repr(tool_call_content)}")
+                    continue
+                else:
+                    chunk["choices"][0]["delta"]["content"] = text
+
                 # 用yield迭代推送对话内容
                 yield f"data: {json.dumps(chunk)}\n\n"
                 await asyncio.sleep(0.1) #模拟延迟
@@ -159,8 +206,7 @@ async def stream_chat(request: Request):
     print(f"生成流式响应的异步生成器,request_raw is {json_post_raw}")
     json_post = json.dumps(json_post_raw)  # 将JSON数据转换为字符串
     json_post_list = json.loads(json_post)  # 将字符串转换为Python对象
-    messages = json_post_list.get('messages')  # 获取请求中的提示
-    return generate_stream(messages,10240)
+    return generate_stream(json_post_list,1024)
 
 # ================== Embedding大模型 请求/响应模型定义 ==================
 
@@ -223,10 +269,11 @@ async def create_embeddings(request: EmbeddingRequest):
 if __name__ == '__main__':
     # 加载预训练的分词器和模型
     print("正在加载模型... ...")
-    tokenizer = AutoTokenizer.from_pretrained("./qwen/Qwen-7B-Chat", trust_remote_code=True)
+    model_path = "./Qwen/Qwen3-14B"
+    tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
     # 可以通过自定义device_map将模型的不同分层分配到不同的GPU达到GPU的高效使用
-    model = AutoModelForCausalLM.from_pretrained("./qwen/Qwen-7B-Chat",torch_dtype=TORCH_DTYPE, device_map="auto", trust_remote_code=True).eval()
-    model.generation_config = GenerationConfig.from_pretrained("./qwen/Qwen-7B-Chat", trust_remote_code=True) # 可指定
+    model = AutoModelForCausalLM.from_pretrained(model_path,torch_dtype=TORCH_DTYPE, device_map="auto", trust_remote_code=True).eval()
+    model.generation_config = GenerationConfig.from_pretrained(model_path, trust_remote_code=True) # 可指定
     model.eval()  # 设置模型为评估模式
     # 加载LoRA 权重
     lora_path="./llm-finetune/lora-alpaca-qwen2-finetuned"

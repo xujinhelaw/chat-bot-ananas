@@ -5,7 +5,8 @@ import torch
 # -------------------------------
 # 1. 加载 tokenizer
 # -------------------------------
-tokenizer = AutoTokenizer.from_pretrained("../qwen/Qwen-7B-Chat", trust_remote_code=True)
+model_path = "../Qwen/Qwen3-14B"
+tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
 
 # 设置 pad_token
 if tokenizer.pad_token is None:
@@ -17,14 +18,14 @@ tokenizer.padding_side = "right"  # 重要：用于 batch 推理
 # 2. 加载基础模型 + LoRA（关键：device_map="auto"）
 # -------------------------------
 model = AutoModelForCausalLM.from_pretrained(
-    "../qwen/Qwen-7B-Chat",
+    model_path,
     device_map="auto",           # ✅ 自动加载到 GPU（如果有）
     torch_dtype=torch.bfloat16,  # 可选：节省显存
     trust_remote_code=True
 )
 
 # 加载 LoRA 权重
-model = PeftModel.from_pretrained(model, "./lora-alpaca-qwen2-finetuned")
+model = PeftModel.from_pretrained(model, "./lora-alpaca-qwen3-finetuned")
 #model = model.merge_and_unload()
 
 # -------------------------------

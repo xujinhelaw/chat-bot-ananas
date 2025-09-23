@@ -21,7 +21,7 @@ warnings.filterwarnings("ignore", message="You are using an old version of the c
 # -------------------------------
 # 1. 模型与 tokenizer 加载
 # -------------------------------
-model_path = "../qwen/Qwen-7B-Chat"  # 可替换为你想微调的模型
+model_path = "../Qwen/Qwen3-14B"  # 可替换为你想微调的模型
 
 #从 Hugging Face 的模型仓库中加载与指定预训练模型（model_path）对应的分词器（Tokenizer）
 tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
@@ -70,7 +70,7 @@ else:
     )
 
 # 👇 打印所有包含 'proj' 的 nn.Linear 层名称
-print("🔍 Finding projection layers in Qwen2-7B:")
+print("🔍 Finding projection layers in Qwen3:")
 target_candidates = []
 for name, module in model.named_modules():
     if 'proj' in name and isinstance(module, torch.nn.Linear):
@@ -174,8 +174,11 @@ data_collator = DataCollatorForLanguageModeling(tokenizer, mlm=False)
 lora_config = LoraConfig(
     r=8,                        # LoRA 秩
     lora_alpha=16,               # 超参
-    # c_attn 是 Qwen 中 QKV 投影的统一层，还有["c_attn", "c_proj", "w1", "w2"]
-    target_modules=["c_attn", "c_proj", "w1", "w2"],
+    # Qwen3 中 QKV 投影的统一层["q_proj", "k_proj", "v_proj", "o_proj" ...]
+    target_modules=[
+        "q_proj", "k_proj", "v_proj", "o_proj",
+        "gate_proj", "up_proj", "down_proj"
+    ],
     #在低秩更新模块中引入 10% 的随机丢弃概率，
     #避免模型过度依赖 LoRA 新增参数拟合训练数据中的噪声，提高对未见过数据的适配能力
     lora_dropout=0.1,
@@ -197,7 +200,7 @@ model.print_trainable_parameters()  # 查看可训练参数量（通常 <1%）
 # 4. 配置训练参数
 # -------------------------------
 training_args = TrainingArguments(
-    output_dir="./lora-alpaca-qwen2",  # 模型训练结果（ checkpoint、日志等 ）的保存路径
+    output_dir="./lora-alpaca-qwen3",  # 模型训练结果（ checkpoint、日志等 ）的保存路径
     num_train_epochs=200,  # 训练的总轮数，即完整遍历训练集的次数
     per_device_train_batch_size=4,  # 每个设备（如单张GPU）上的训练批次大小
     gradient_accumulation_steps=4,  # 梯度累积步数，每累积4个批次后再更新一次参数（变相增大总batch size）
@@ -231,7 +234,7 @@ trainer.train()
 # -------------------------------
 # 6. 保存 LoRA 适配器
 # -------------------------------
-model.save_pretrained("lora-alpaca-qwen2-finetuned")
-tokenizer.save_pretrained("lora-alpaca-qwen2-finetuned")
+model.save_pretrained("lora-alpaca-qwen3-finetuned")
+tokenizer.save_pretrained("lora-alpaca-qwen3-finetuned")
 
-print("✅ LoRA 微调完成，适配器已保存到 'lora-alpaca-qwen2-finetuned'")
+print("✅ LoRA 微调完成，适配器已保存到 'lora-alpaca-qwen3-finetuned'")

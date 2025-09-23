@@ -76,6 +76,25 @@ chat-bot-ananas/ (根项目)
 │   ├── chatmachine.py（大模型访问客户端代码）
 │   ├── download.py（大模型、Embedding模型下载代码）
 │   ├── environment.yml（大模型部署和访问客户端需要的依赖包）
+└── mcp-server/ (mcp服务端模块)
+│   ├── src/
+│   │   ├── main/
+│   │   │   ├── java/
+│   │   │   │   └── org/
+│   │   │   │       └── ananas/
+│   │   │   │           └── mcpserver/
+│   │   │   │           │    └── config/
+│   │   │   │           │        └── ToolCallbackProviderConfig.java(mcp服务端配置文件)
+│   │   │   │           │    ├── model/
+│   │   │   │           │        ├── CurrentCondition.java(天气情况对象)
+│   │   │   │           │        ├── WeatherDesc.java(天气描述对象)
+│   │   │   │           │        └── WeatherResponse.java(天气情况响应对象)
+│   │   │   │           │    ├── service/
+│   │   │   │           │        ├── WeatherService.java(天气mcp服务接口)
+│   │   │   │           │        └── WeatherServiceImpl.java(天气mcp服务)
+│   │   │   │           │    └── McpServerApplication.java(mcp服务后端应用启动代码)
+│   │   │   └── resources/
+│   │   │       └── application.yml（mcp服务后端配置文件）
 └── pom.xml（后端依赖管理pom文件）
 └── pom.xml (根 POM，管理子模块)
 └──settings.xml（maven仓配置文件）
@@ -203,7 +222,19 @@ python chatmachine.py
 启动前后端代码后，勾选RAG模型的复选框
 
 让大模型回答：  
-证券公司从事证券自营业务不得有哪些行为  
+证券公司从事证券自营业务不得有哪些行为 
+
+#7、大模型通过MCP调用天气服务
+启动前后端代码后，勾选MCP的复选框
+
+让大模型回答：  
+今天南京的天气
+
+MCP实现的效果如下：
+未开启mcp,无法返回当前的天气情况
+![未开启mcp](https://upload-images.jianshu.io/upload_images/19704237-8334763e745586ea.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+开启mcp,返回当前的天气情况
+![开启mcp](https://upload-images.jianshu.io/upload_images/19704237-86a8f407d887545f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 
 

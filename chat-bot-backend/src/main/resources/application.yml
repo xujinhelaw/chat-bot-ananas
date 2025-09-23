@@ -11,7 +11,7 @@ spring:
       base-url: http://127.0.0.1:6006 # 大模型的访问地址
       chat:
         options:
-          model: qwen-7B
+          model: Qwen3-14B
           # temperature参数用于控制生成文本的多样性
           #值越高‌，生成的文本越多样化，但也可能包含更多的随机性和不可预测的内容
           #值越低‌，生成的文本越接近于确定性的结果，即生成的文本会更加一致和可预测
@@ -21,8 +21,20 @@ spring:
         options:
           model: bge-large-zh-v1.5 # 模型名在这里
           dimensions: 1024 # 向量维度
+    retry:
+      maxAttempts: 3
+    mcp:
+      client:
+        enabled: true # 是否启用MCP客户端
+        request-timeout: 60s # MCP客户端请求超时时间
+        type: SYNC # MCP客户端类型
+        sse:
+          connections:
+            server1:
+              url: http://127.0.0.1:8090
 
-# Neo4j 配置
+
+  # Neo4j 配置
   neo4j:
     uri: neo4j://localhost:7687 #另外http:////localhost:7474 管理页面
     authentication:
@@ -38,3 +50,4 @@ spring:
 logging:
   level:
     org.springframework.ai: DEBUG
+    org.springframework.ai.openai: DEBUG

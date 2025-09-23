@@ -1,0 +1,19 @@
+server:
+  port: 8090
+
+spring:
+  application:
+    name: mcp-server
+  ai:
+    mcp:
+      server:
+        name: mcp-server
+        version: 1.0.0
+        type: SYNC
+        sse-message-endpoint: /mcp/messages
+
+# 可选：配置日志
+logging:
+  level:
+    org.springframework.ai: DEBUG
+    org.springframework.ai.openai: DEBUG

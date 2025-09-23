@@ -7,19 +7,25 @@ channels:
   - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/pro
   - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/msys2
 dependencies:
-  - python=3.8.10
+  - python=3.9.15
   - pip=24.2
   - pip:
     - -i https://pypi.tuna.tsinghua.edu.cn/simple/ # 这里是pip访问国外仓被墙，添加指定国内仓
-    - torch==2.4.1
-    - modelscope==1.9.5
+    - torch==2.7.0
+    - modelscope==1.28.0
     - tiktoken==0.7.0
-    - accelerate==1.0.1
+    - accelerate==1.10.1
     - fastapi==0.104.1
     - uvicorn==0.24.0.post1
     - requests==2.32.4
     - modelscope==1.9.5
-    - transformers==4.34.0
+    - transformers==4.53.0
     - transformers_stream_generator==0.0.4
+    - peft==0.4.0
+    - datasets==2.10.1
+    - scipy==1.10.1
+    - bitsandbytes==0.47.0
+    - accelerate==1.10.1
     - pip==24.2
-    - sentence-transformers==3.0.0
+    - sentence_transformers==5.1.0
+    - pyarrow==14.0.0
