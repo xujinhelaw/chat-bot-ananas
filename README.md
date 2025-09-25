@@ -1,14 +1,15 @@
 #项目简介
 chat-bot-ananas是Java语言的大模型聊天机器人(LLM Agent) ，本项目为大模型简易版的入门级代码，致力于打造全面的大模型应用实践。基于框架SpringAI+SpringBoot+Vue进行开发。
+![ananas-log.png](chat-bot-frontend/src/assets/ananas-log.png)  
 
 ##<a name="table"/>已具备的功能  
 功能名称       | 是否实现  
 ------------- | -------------  
-本地部署大模型   | 实现  
-本地大模型微调   | 实现  
-大模型聊天机器人 | 实现  
-RAG           | 实现  
-MCP           | 待实现  
+本地部署大模型   | 已实现  
+本地大模型微调   | 已实现  
+大模型聊天机器人 | 已实现  
+RAG           | 已实现  
+MCP           | 已实现  
 
 #1、下载源码  
 ```
@@ -219,22 +220,31 @@ python chatmachine.py
 ```
 
 #6、大模型RAG构建知识图谱  
-启动前后端代码后，勾选RAG模型的复选框
+![RAG应用的示意图](https://upload-images.jianshu.io/upload_images/19704237-78ad8791fd298caa.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)  
 
-让大模型回答：  
-证券公司从事证券自营业务不得有哪些行为 
+启动前后端代码后，勾选RAG模型的复选框  
+让大模型回答如下问题：  
+证券公司从事证券自营业务不得有哪些行为  
+![未开启RAG的返回结果](https://upload-images.jianshu.io/upload_images/19704237-673c2ad1d9e1868f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)  
 
-#7、大模型通过MCP调用天气服务
-启动前后端代码后，勾选MCP的复选框
+开启RAG的返回结果跟《证券公司监督管理条例.pdf》文档中的四十三条结果内容完全一致  
+![开启RAG的返回结果](https://upload-images.jianshu.io/upload_images/19704237-e0a143a5bf2520f2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)  
 
-让大模型回答：  
-今天南京的天气
+原始资料中搜索无法搜到，因为pdf里面的搜索是完全匹配  
+https://upload-images.jianshu.io/upload_images/19704237-95855cf73e8d1a55.png?imageMogr2/auto-orient/strip|imageView2/2/w/1200/format/webp  
 
-MCP实现的效果如下：
-未开启mcp,无法返回当前的天气情况
-![未开启mcp](https://upload-images.jianshu.io/upload_images/19704237-8334763e745586ea.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-开启mcp,返回当前的天气情况
-![开启mcp](https://upload-images.jianshu.io/upload_images/19704237-86a8f407d887545f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+#7、大模型通过MCP调用天气服务  
+![MCP的原理图](https://upload-images.jianshu.io/upload_images/19704237-9d2ec52a5dd6fdc7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)  
+
+启动前后端代码后，勾选MCP的复选框  
+让大模型回答如下问题：    
+今天南京的天气  
+
+MCP实现的效果如下：  
+未开启mcp,无法返回当前的天气情况  
+![未开启MCP](https://upload-images.jianshu.io/upload_images/19704237-8334763e745586ea.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)  
+开启mcp,返回当前的天气情况  
+![开启MCP](https://upload-images.jianshu.io/upload_images/19704237-86a8f407d887545f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)  
 
 
 
