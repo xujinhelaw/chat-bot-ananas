@@ -1,5 +1,5 @@
 #项目简介
-chat-bot-ananas是Java语言的大模型聊天机器人(LLM Agent) ，本项目为大模型简易版的入门级代码，致力于打造全面的大模型应用实践。基于框架SpringAI+SpringBoot+Vue进行开发。
+chat-bot-ananas是Java语言的大模型聊天机器人(LLM Agent) ，本项目为大模型简易版的入门级代码，致力于打造全面的大模型应用实践。基于框架SpringAI+SpringBoot+Vue进行开发。  
 ![ananas-log.png](chat-bot-frontend/src/assets/ananas-log.png)  
 
 ##<a name="table"/>已具备的功能  
@@ -165,9 +165,9 @@ https://www.jianshu.com/p/f40458d99fa0
 ##4.3 编译和启动后端程序  
 配置大模型的信息，根据实际的api-key和访问地址来配置,
 可以配置公网的大模型，也可以配置本地大模型  
-![大模型信息配置](https://upload-images.jianshu.io/upload_images/19704237-57064f8b48dae90b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![大模型信息配置](https://upload-images.jianshu.io/upload_images/19704237-57064f8b48dae90b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)  
 启动后端代码  
-![后端代码启动](https://upload-images.jianshu.io/upload_images/19704237-527a407896c52264.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![后端代码启动](https://upload-images.jianshu.io/upload_images/19704237-527a407896c52264.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)  
 
 ##4.4 编译和启动前端程序  
 进入前端代码根目录，执行下面的命令  
@@ -176,17 +176,17 @@ Windows命令
 cd .\chat-bot-frontend\
 npm install
 ```  
-![前端代码编译](https://upload-images.jianshu.io/upload_images/19704237-ceb580910c6ad9b8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![前端代码编译](https://upload-images.jianshu.io/upload_images/19704237-ceb580910c6ad9b8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)  
 等待编译完成  
-![前端代码编程完成](https://upload-images.jianshu.io/upload_images/19704237-6eaf0b88f5fb5c7a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![前端代码编程完成](https://upload-images.jianshu.io/upload_images/19704237-6eaf0b88f5fb5c7a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)  
 启动前端代码  
 ```
 npm run lint --fix
 npm run serve
 ```  
-![前端启动成功](https://upload-images.jianshu.io/upload_images/19704237-8622acb19c2af85e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![前端启动成功](https://upload-images.jianshu.io/upload_images/19704237-8622acb19c2af85e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)  
 跟大模型进行对话  
-![image.png](https://upload-images.jianshu.io/upload_images/19704237-0676bcbf2b9261d8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](https://upload-images.jianshu.io/upload_images/19704237-0676bcbf2b9261d8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)  
 
 #5 大模型lora微调  
 #5.1 大模型llm-serve模块中lora微调的启动  
@@ -203,7 +203,7 @@ pip install bitsandbytes==0.41.1 accelerate==1.0.1
 # 进入llm-finetune的目录
 python lora_finetune.py
 ```  
-#5.2 启动大模型并叠加lora微调的参数
+#5.2 启动大模型并叠加lora微调的参数  
 ```
 # 返回llm-server的目录，并执行，这里的api.py做了判断处理，如果有微调参数，则直接叠加
 python api.py
@@ -229,9 +229,6 @@ python chatmachine.py
 
 开启RAG的返回结果跟《证券公司监督管理条例.pdf》文档中的四十三条结果内容完全一致  
 ![开启RAG的返回结果](https://upload-images.jianshu.io/upload_images/19704237-e0a143a5bf2520f2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)  
-
-原始资料中搜索无法搜到，因为pdf里面的搜索是完全匹配  
-https://upload-images.jianshu.io/upload_images/19704237-95855cf73e8d1a55.png?imageMogr2/auto-orient/strip|imageView2/2/w/1200/format/webp  
 
 #7、大模型通过MCP调用天气服务  
 ![MCP的原理图](https://upload-images.jianshu.io/upload_images/19704237-9d2ec52a5dd6fdc7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)  
