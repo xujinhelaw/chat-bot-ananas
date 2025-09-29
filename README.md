@@ -159,8 +159,8 @@ https://www.jianshu.com/p/e3ab31ae1fbc
 https://www.jianshu.com/p/f40458d99fa0  
 
 ## 4.2 Idea打开项目，并进行配置  
-![构建工具配置](https://upload-images.jianshu.io/upload_images/19704237-f9c9f8ba1faee2f9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-![项目SDK配置](https://upload-images.jianshu.io/upload_images/19704237-620bee8175d03d1a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![构建工具配置](https://upload-images.jianshu.io/upload_images/19704237-f9c9f8ba1faee2f9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)  
+![项目SDK配置](https://upload-images.jianshu.io/upload_images/19704237-620bee8175d03d1a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)  
 
 ## 4.3 编译和启动后端程序  
 配置大模型的信息，根据实际的api-key和访问地址来配置,
