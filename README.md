@@ -1,8 +1,8 @@
-#项目简介  
+# 项目简介  
 chat-bot-ananas是Java语言的大模型聊天机器人(LLM Agent) ，本项目为大模型简易版的入门级代码，致力于打造全面的大模型应用实践。基于框架SpringAI+SpringBoot+Vue进行开发。  
 ![ananas-log.png](chat-bot-frontend/src/assets/ananas-log.png)  
 
-##<a name="table"/>已具备的功能  
+## <a name="table"/>已具备的功能  
 功能名称       | 是否实现  
 ------------- | -------------  
 本地部署大模型   | 已实现  
@@ -11,11 +11,11 @@ chat-bot-ananas是Java语言的大模型聊天机器人(LLM Agent) ，本项目�
 RAG           | 已实现  
 MCP           | 已实现  
 
-#1、下载源码  
+# 1、下载源码  
 ```
 git clone https://github.com/xujinhelaw/chat-bot-ananas.git
 ```  
-#2、使用Idea软件打开项目chat-bot-ananas  
+# 2、使用Idea软件打开项目chat-bot-ananas  
 项目结构如下
 ```
 chat-bot-ananas/ (根项目)
@@ -101,8 +101,8 @@ chat-bot-ananas/ (根项目)
 └──settings.xml（maven仓配置文件）
 ```
 
-#3、大模型llm-serve模块的启动  
-##3.1 搭建python的执行环境  
+# 3、大模型llm-serve模块的启动  
+## 3.1 搭建python的执行环境  
 安装miniconda(仅包含python、conda 和 conda 的依赖项)  
 conda官网  
 https://www.anaconda.com/
@@ -112,7 +112,7 @@ conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/f
 conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/
 conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/pytorch/
 ```
-##3.2 创建py虚拟环境安装依赖包并切换环境  
+## 3.2 创建py虚拟环境安装依赖包并切换环境  
 进到chat-bot-ananas/llm-server/目录,导入环境文件chat-bot-ananas/llm-server/environment.yml  
 ```
 conda env create -f environment.yml
@@ -121,21 +121,21 @@ conda activate qwen
 # Linux/Unix 切换环境
 source activate qwen
 ```
-##3.3 下载大模型  
+## 3.3 下载大模型  
 ```
 python download.py
 ```
-##3.4 启动大模型  
+## 3.4 启动大模型  
 ```
 python api.py
 ```
-##3.5 通过本地curl命令访问大模型  
+## 3.5 通过本地curl命令访问大模型  
 重新开一个终端，通过curl命令访问  
 ```
 curl -H "Content-Type:octet-stream" -X POST -d '{"messages": [{"role": "system","content": "你是一个 helpful assistant。"},
 {"role": "user", "content": "介绍一下你自己"}]}' http://127.0.0.1:6006/v1/chat/completions
 ```
-##3.6 通过python实现的客户端访问大模型  
+## 3.6 通过python实现的客户端访问大模型  
 重新开一个终端，启动客户端
 ```
 # 因为是新开的终端，记得切到虚拟环境
@@ -148,8 +148,8 @@ python chatmachine.py
 详细的环境配置和启动步骤可以参考如下的文章：  
 https://www.jianshu.com/p/e3ab31ae1fbc  
 
-#4、网页大模型聊天机器人chat-bot前后端的启动  
-##4.1 安装依赖软件  
+# 4、网页大模型聊天机器人chat-bot前后端的启动  
+## 4.1 安装依赖软件  
 安装Idea(自带maven)  
 安装JDK 17  
 安装nvm 1.2.2  
@@ -158,18 +158,18 @@ https://www.jianshu.com/p/e3ab31ae1fbc
 前台的环境安装可以参考如下的文章：  
 https://www.jianshu.com/p/f40458d99fa0  
 
-##4.2 Idea打开项目，并进行配置  
+## 4.2 Idea打开项目，并进行配置  
 ![构建工具配置](https://upload-images.jianshu.io/upload_images/19704237-f9c9f8ba1faee2f9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 ![项目SDK配置](https://upload-images.jianshu.io/upload_images/19704237-620bee8175d03d1a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
-##4.3 编译和启动后端程序  
+## 4.3 编译和启动后端程序  
 配置大模型的信息，根据实际的api-key和访问地址来配置,
 可以配置公网的大模型，也可以配置本地大模型  
 ![大模型信息配置](https://upload-images.jianshu.io/upload_images/19704237-57064f8b48dae90b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)  
 启动后端代码  
 ![后端代码启动](https://upload-images.jianshu.io/upload_images/19704237-527a407896c52264.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)  
 
-##4.4 编译和启动前端程序  
+## 4.4 编译和启动前端程序  
 进入前端代码根目录，执行下面的命令  
 ```
 Windows命令
@@ -188,9 +188,9 @@ npm run serve
 跟大模型进行对话  
 ![image.png](https://upload-images.jianshu.io/upload_images/19704237-0676bcbf2b9261d8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)  
 
-#5 大模型lora微调  
-#5.1 大模型llm-serve模块中lora微调的启动  
-##5.1.1 安装依赖  
+# 5、大模型lora微调  
+# 5.1 大模型llm-serve模块中lora微调的启动  
+## 5.1.1 安装依赖  
 追加安装下列的依赖  
 ```
 # 基础依赖
@@ -198,17 +198,17 @@ pip install transformers==4.34.0 peft==0.4.0 datasets==2.10.1 scipy==1.10.1 tikt
 # 量化支持（4bits 微调需安装）
 pip install bitsandbytes==0.41.1 accelerate==1.0.1
 ```  
-##5.1.2 执行lora微调的脚本  
+## 5.1.2 执行lora微调的脚本  
 ```
 # 进入llm-finetune的目录
 python lora_finetune.py
 ```  
-#5.2 启动大模型并叠加lora微调的参数  
+# 5.2 启动大模型并叠加lora微调的参数  
 ```
 # 返回llm-server的目录，并执行，这里的api.py做了判断处理，如果有微调参数，则直接叠加
 python api.py
 ```
-#5.3 通过python实现的客户端访问大模型
+# 5.3 通过python实现的客户端访问大模型
 重新开一个终端，启动客户端
 ```
 # 因为是新开的终端，记得切到虚拟环境
@@ -219,7 +219,7 @@ source activate qwen
 python chatmachine.py
 ```
 
-#6、大模型RAG构建知识图谱  
+# 6、大模型RAG构建知识图谱  
 ![RAG应用的示意图](https://upload-images.jianshu.io/upload_images/19704237-78ad8791fd298caa.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)  
 
 启动前后端代码后，勾选RAG模型的复选框  
@@ -230,7 +230,7 @@ python chatmachine.py
 开启RAG的返回结果跟《证券公司监督管理条例.pdf》文档中的四十三条结果内容完全一致  
 ![开启RAG的返回结果](https://upload-images.jianshu.io/upload_images/19704237-e0a143a5bf2520f2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)  
 
-#7、大模型通过MCP调用天气服务  
+# 7、大模型通过MCP调用天气服务  
 ![MCP的原理图](https://upload-images.jianshu.io/upload_images/19704237-9d2ec52a5dd6fdc7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)  
 
 启动前后端代码后，勾选MCP的复选框  
